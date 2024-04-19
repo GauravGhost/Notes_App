@@ -9,11 +9,10 @@ ThemeData lightMode = ThemeData(
   ),
 );
 
-
 ThemeData darkMode = ThemeData(
   colorScheme: ColorScheme.dark(
     background: Colors.grey.shade900,
-    primary: Colors.grey.shade800,
+    primary: Color.fromARGB(255, 39, 39, 39),
     secondary: Colors.grey.shade700,
     inversePrimary: Colors.grey.shade300,
   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes_offline/components/drawer.dart';
+import 'package:notes_offline/components/note_tile.dart';
 import 'package:notes_offline/models/note.dart';
 import 'package:notes_offline/models/note_database.dart';
 import 'package:notes_offline/theme/theme_provider.dart';
@@ -26,6 +27,7 @@ class _NotesPageState extends State<NotesPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.background,
         content: TextField(controller: textController),
         actions: [
           MaterialButton(
@@ -54,6 +56,7 @@ class _NotesPageState extends State<NotesPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.background,
         title: const Text("Update Note"),
         content: TextField(controller: textController),
         actions: [
@@ -132,21 +135,10 @@ class _NotesPageState extends State<NotesPage> {
               itemBuilder: (context, index) {
                 // get individual notes
                 final note = currentNotes[index];
-                return ListTile(
-                  title: Text(note.text),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // update method
-                      IconButton(
-                          onPressed: () => updateNote(context, note),
-                          icon: const Icon(Icons.edit)),
-                      // delet method
-                      IconButton(
-                          onPressed: () => deleteNote(context, note.id),
-                          icon: const Icon(Icons.delete))
-                    ],
-                  ),
+                return NoteTile(
+                  text: note.text,
+                  onPressedDelete: () => deleteNote(context, note.id),
+                  onPressedUpdate: () => updateNote(context, note),
                 );
               },
             ),
