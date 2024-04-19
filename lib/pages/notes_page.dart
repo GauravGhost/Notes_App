@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:notes_offline/components/drawer.dart';
 import 'package:notes_offline/models/note.dart';
 import 'package:notes_offline/models/note_database.dart';
+import 'package:notes_offline/theme/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -57,7 +60,9 @@ class _NotesPageState extends State<NotesPage> {
           MaterialButton(
             onPressed: () {
               // add to db
-              context.read<NoteDatabase>().updateNote(note.id, textController.text);
+              context
+                  .read<NoteDatabase>()
+                  .updateNote(note.id, textController.text);
               // clear the text field and pop the dialog
               textController.clear();
               Navigator.pop(context);
@@ -77,40 +82,76 @@ class _NotesPageState extends State<NotesPage> {
   Widget build(BuildContext context) {
     final noteDatabase = context.watch<NoteDatabase>();
     List<Note> currentNotes = noteDatabase.currentNotes;
-
+    final isDarkMode =
+        Provider.of<ThemeProvider>(context, listen: false).isDarkMode;
     return Scaffold(
+      drawer: const MyDrawer(),
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Notes'),
-        foregroundColor: Colors.greenAccent,
+        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
         backgroundColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+                onPressed: () =>
+                    Provider.of<ThemeProvider>(context, listen: false)
+                        .toggleTheme(),
+                icon: isDarkMode
+                    ? const Icon(Icons.light_mode)
+                    : const Icon(Icons.dark_mode)),
+          )
+        ],
       ),
+      backgroundColor: Theme.of(context).colorScheme.background,
       floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         onPressed: () => createNote(context),
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.inversePrimary,
+        ),
       ),
-      body: ListView.builder(
-        itemCount: currentNotes.length,
-        itemBuilder: (context, index) {
-          // get individual notes
-          final note = currentNotes[index];
-          return ListTile(
-            title: Text(note.text),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // update method
-                IconButton(
-                    onPressed: () => updateNote(context, note),
-                    icon: const Icon(Icons.edit)),
-                // delet method
-                IconButton(
-                    onPressed: () => deleteNote(context, note.id),
-                    icon: const Icon(Icons.delete))
-              ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Heading
+          Padding(
+            padding: const EdgeInsets.only(left: 15),
+            child: Text(
+              "Notes",
+              style: GoogleFonts.dmSerifText(
+                  fontSize: 48,
+                  color: Theme.of(context).colorScheme.inversePrimary),
             ),
-          );
-        },
+          ),
+
+          // List Of Notes
+          Expanded(
+            child: ListView.builder(
+              itemCount: currentNotes.length,
+              itemBuilder: (context, index) {
+                // get individual notes
+                final note = currentNotes[index];
+                return ListTile(
+                  title: Text(note.text),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // update method
+                      IconButton(
+                          onPressed: () => updateNote(context, note),
+                          icon: const Icon(Icons.edit)),
+                      // delet method
+                      IconButton(
+                          onPressed: () => deleteNote(context, note.id),
+                          icon: const Icon(Icons.delete))
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
